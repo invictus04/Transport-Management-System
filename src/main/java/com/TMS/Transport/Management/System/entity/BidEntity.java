@@ -25,11 +25,11 @@ public class BidEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "load_id", nullable = false)
-    private LoadEntity loadId;
+    private LoadEntity load;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transporter_id", nullable = false)
-    private TransporterEntity transporterId;
+    private TransporterEntity transporter;
 
     @Column(name = "proposed_rate")
     private double proposedRate;

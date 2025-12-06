@@ -13,7 +13,7 @@ public interface BidRepository extends JpaRepository<BidEntity, UUID> {
 
     List<BidEntity> findByLoad_LoadId(UUID loadId);
 
-    List<BidEntity> findByLoad_LoadIdAndTransporterIdAndStatus(UUID loadId, UUID transporterId, BidStatus status);
+    List<BidEntity> findByLoad_LoadIdAndTransporter_TransporterIdAndStatus(UUID loadId, UUID transporterId, BidStatus status);
 
     boolean existsByLoad_LoadIdAndTransporter_TransporterId(UUID loadId, UUID transporterId);
 }
