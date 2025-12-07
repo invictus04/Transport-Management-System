@@ -1,6 +1,8 @@
 package com.TMS.Transport.Management.System.service.implementation;
 
 import com.TMS.Transport.Management.System.dto.BookingDto;
+import com.TMS.Transport.Management.System.dto.responses.BidResponseDto;
+import com.TMS.Transport.Management.System.dto.responses.BookingResponseDto;
 import com.TMS.Transport.Management.System.entity.*;
 import com.TMS.Transport.Management.System.entity.enums.BidStatus;
 import com.TMS.Transport.Management.System.entity.enums.BookingStatus;
@@ -32,11 +34,26 @@ public class BookingServiceImpl implements BookingService {
     private final TransporterRepository transporterRepository;
     private final ModelMapper modelMapper;
 
+    private BookingResponseDto convertToDto(BookingEntity booking) {
+        BookingResponseDto dto = modelMapper.map(booking, BookingResponseDto.class);
+
+        if (booking.getLoad() != null) {
+            dto.setLoadId(booking.getLoad().getLoadId());
+        }
+        if (booking.getTransporter() != null) {
+            dto.setTransporterId(booking.getTransporter().getTransporterId());
+        }
+        if (booking.getBid() != null) {
+            dto.setBidId(booking.getBid().getBidId());
+        }
+        return dto;
+    }
+
     @Override
     @Transactional
-    public BookingDto creatingBooking(BookingDto bookingDto) {
-        BidEntity bid = bidRepository.findById(bookingDto.getBid().getBidId())
-                .orElseThrow(() -> new ResourceNotFoundException("Bid not found: " + bookingDto.getBid().getBidId()));
+    public BookingResponseDto creatingBooking(BookingDto bookingDto) {
+        BidEntity bid = bidRepository.findById(bookingDto.getBidId())
+                .orElseThrow(() -> new ResourceNotFoundException("Bid not found: " + bookingDto.getBidId()));
 
         LoadEntity load = bid.getLoad();
 
@@ -101,7 +118,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        return modelMapper.map(savedBooking, BookingDto.class);
+        return convertToDto(savedBooking);
     }
 
     @Override
@@ -113,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public void cancelBooking(UUID bookingId) {
+    public String cancelBooking(UUID bookingId) {
 
         BookingEntity booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + bookingId));
@@ -140,5 +157,6 @@ public class BookingServiceImpl implements BookingService {
             loadRepository.save(load);
         }
 
+        return "Your booking is cancelled Successfully";
     }
 }

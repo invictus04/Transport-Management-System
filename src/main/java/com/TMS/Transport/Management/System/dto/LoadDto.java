@@ -3,15 +3,18 @@ package com.TMS.Transport.Management.System.dto;
 import com.TMS.Transport.Management.System.entity.enums.LoadStatus;
 import com.TMS.Transport.Management.System.entity.enums.WeightUnit;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class LoadDto {
 
     private UUID loadId;
@@ -37,5 +40,7 @@ public class LoadDto {
     private LoadStatus status;
 
     private LocalDateTime datePosted;
+
+    private List<BidDto> bids;
 
 }

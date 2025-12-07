@@ -1,6 +1,7 @@
 package com.TMS.Transport.Management.System.service.interfaces;
 
 import com.TMS.Transport.Management.System.dto.BidDto;
+import com.TMS.Transport.Management.System.dto.responses.BidResponseDto;
 import com.TMS.Transport.Management.System.entity.enums.BidStatus;
 
 import java.util.List;

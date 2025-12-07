@@ -2,6 +2,7 @@ package com.TMS.Transport.Management.System.service.implementation;
 
 import com.TMS.Transport.Management.System.dto.AvailableTrucksDto;
 import com.TMS.Transport.Management.System.dto.TransporterDto;
+import com.TMS.Transport.Management.System.dto.responses.TransporterResponseDto;
 import com.TMS.Transport.Management.System.entity.AvailableTrucks;
 import com.TMS.Transport.Management.System.entity.TransporterEntity;
 import com.TMS.Transport.Management.System.exception.ResourceNotFoundException;
@@ -24,7 +25,7 @@ public class TransporterServiceImpl implements TransporterService {
     private final ModelMapper modelMapper;
 
     @Override
-    public TransporterDto createTransporter(TransporterDto transporterDto) {
+    public TransporterResponseDto createTransporter(TransporterDto transporterDto) {
         TransporterEntity transporterEntity = modelMapper.map(transporterDto, TransporterEntity.class);
 
         if(transporterEntity.getRating() > 5.0){
@@ -32,7 +33,8 @@ public class TransporterServiceImpl implements TransporterService {
         }
 
         TransporterEntity savedTransporter = transporterRepository.save(transporterEntity);
-        return modelMapper.map(savedTransporter,TransporterDto.class);
+
+        return modelMapper.map(savedTransporter,TransporterResponseDto.class);
     }
 
     @Override

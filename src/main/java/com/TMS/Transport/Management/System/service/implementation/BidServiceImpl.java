@@ -1,6 +1,7 @@
 package com.TMS.Transport.Management.System.service.implementation;
 
 import com.TMS.Transport.Management.System.dto.BidDto;
+import com.TMS.Transport.Management.System.dto.responses.BidResponseDto;
 import com.TMS.Transport.Management.System.entity.BidEntity;
 import com.TMS.Transport.Management.System.entity.LoadEntity;
 import com.TMS.Transport.Management.System.entity.TransporterEntity;
@@ -32,14 +33,27 @@ public class BidServiceImpl implements BidService {
     private final TransporterRepository transporterRepository;
     private final ModelMapper modelMapper;
 
+    private BidDto convertToDto(BidEntity bid) {
+        BidDto dto = modelMapper.map(bid, BidDto.class);
+
+        if (bid.getLoad() != null) {
+            dto.setLoadId(bid.getLoad().getLoadId());
+        }
+        if (bid.getTransporter() != null) {
+            dto.setTransporterId(bid.getTransporter().getTransporterId());
+        }
+        return dto;
+    }
+
     @Override
     @Transactional
     public BidDto createBid(BidDto bidDto) {
-        LoadEntity load = loadRepository.findById(bidDto.getLoadId())
+            LoadEntity load = loadRepository.findById(bidDto.getLoadId())
                 .orElseThrow(() -> new ResourceNotFoundException("Load not found with id: " + bidDto.getLoadId()));
 
         TransporterEntity transporter = transporterRepository.findById(bidDto.getTransporterId())
                 .orElseThrow(() -> new ResourceNotFoundException("Transporter not found with id: " + bidDto.getTransporterId()));
+
         //Rule 2 verification
         if(load.getStatus() == LoadStatus.BOOKED || load.getStatus() == LoadStatus.CANCELLED) {
             throw new InvalidStatusTransitionException("Cannot bid on a load with status: " + load.getStatus());
@@ -69,13 +83,13 @@ public class BidServiceImpl implements BidService {
 
         BidEntity saveBid = bidRepository.save(bid);
 
-        return modelMapper.map(saveBid, BidDto.class);
+        return convertToDto(saveBid);
     }
 
     @Override
     public List<BidDto> getBids(UUID loadId, UUID transporterId, BidStatus status) {
         List<BidEntity> bids = bidRepository.findByLoad_LoadIdAndTransporter_TransporterIdAndStatus(loadId, transporterId, status);
-       return bids.stream().map(bid -> modelMapper.map(bid, BidDto.class))
+       return bids.stream().map(this::convertToDto)
                .collect(Collectors.toList());
     }
 
@@ -83,7 +97,7 @@ public class BidServiceImpl implements BidService {
     public BidDto getBidById(UUID bidId) {
         BidEntity bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bid not found with id: " + bidId));
-        return modelMapper.map(bid, BidDto.class);
+        return convertToDto(bid);
     }
 
     @Override
@@ -96,6 +110,6 @@ public class BidServiceImpl implements BidService {
         }
 
         bid.setStatus(BidStatus.REJECTED);
-        return modelMapper.map(bidRepository.save(bid), BidDto.class);
+        return convertToDto(bidRepository.save(bid));
     }
 }
