@@ -11,6 +11,7 @@ import com.TMS.Transport.Management.System.exception.ResourceNotFoundException;
 import com.TMS.Transport.Management.System.repository.BidRepository;
 import com.TMS.Transport.Management.System.repository.LoadRepository;
 import com.TMS.Transport.Management.System.service.interfaces.LoadService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class LoadServiceImpl implements LoadService {
         return dto;
     }
 
+
     @Override
     @Transactional
     public LoadResponseDto createLoad(LoadDto loadDto) {
@@ -60,14 +63,20 @@ public class LoadServiceImpl implements LoadService {
 
     @Override
     public Page<LoadDto> getAllLoads(String shipperId, LoadStatus status, Pageable pageable) {
-        Specification<LoadEntity> spec = Specification.where((Specification<LoadEntity>) null);
+        Specification<LoadEntity> spec = ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-        if (shipperId != null && !shipperId.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("shipperId"), shipperId));
-        }
-        if (status != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
-        }
+            if(shipperId != null && !shipperId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("shipperId"), shipperId));
+            }
+
+            if(status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+
+            return  criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
+        } );
 
         Page<LoadEntity> loadPage = loadRepository.findAll(spec, pageable);
 

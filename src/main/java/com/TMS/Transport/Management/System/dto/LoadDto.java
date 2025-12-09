@@ -41,6 +41,4 @@ public class LoadDto {
 
     private LocalDateTime datePosted;
 
-    private List<BidDto> bids;
-
 }

@@ -10,6 +10,5 @@ public class TransportManagementSystemApplication {
 		SpringApplication.run(TransportManagementSystemApplication.class, args);
 	}
 
+
 }
-// create transporter should return id
-// post a load should return id

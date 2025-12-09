@@ -122,10 +122,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingById(UUID bookingId) {
+    public BookingResponseDto getBookingById(UUID bookingId) {
         BookingEntity booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
-        return modelMapper.map(booking, BookingDto.class);
+        return convertToDto(booking);
     }
 
     @Override

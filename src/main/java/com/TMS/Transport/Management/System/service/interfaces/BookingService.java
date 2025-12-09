@@ -9,7 +9,7 @@ public interface BookingService {
 
     BookingResponseDto creatingBooking(BookingDto bookingDto);
 
-    BookingDto getBookingById(UUID bookingId);
+    BookingResponseDto getBookingById(UUID bookingId);
 
     String cancelBooking(UUID bookingId);
 }
